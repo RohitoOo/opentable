@@ -17,8 +17,8 @@ class City extends React.Component {
     axios
       .get("http://opentable.herokuapp.com/api/cities")
       .then(res => {
-        // Split Cities Based On Country Or Area ( SUGGESTION ) 
-         cities = res.data.cities.splice(2200,2719)
+        // Categorize Cities Based On Country Or Area ( SUGGESTION ) 
+         cities = res.data.cities.splice(0,200)
         this.setState({
           cities,
           loading: false
