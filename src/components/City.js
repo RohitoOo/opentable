@@ -4,6 +4,9 @@ import { AutoComplete } from "antd";
 import "antd/dist/antd.css";
 import { connect } from "react-redux";
 import spinner from "../assets/images/spinner.gif";
+
+let cities = [];
+let dataSource = [];
 class City extends React.Component {
   state = {
     cities: [],
@@ -14,8 +17,10 @@ class City extends React.Component {
     axios
       .get("http://opentable.herokuapp.com/api/cities")
       .then(res => {
+        // Split Cities Based On Country Or Area ( SUGGESTION ) 
+         cities = res.data.cities.splice(2200,2719)
         this.setState({
-          cities: res.data.cities,
+          cities,
           loading: false
         });
       })
@@ -31,7 +36,7 @@ class City extends React.Component {
   };
 
   render() {
-    const dataSource = this.state.cities;
+     dataSource = this.state.cities;
 
     return (
       <div>
@@ -53,7 +58,7 @@ class City extends React.Component {
         ) : (
           <div>
             <AutoComplete
-              onSelect={e => this.handleSelect(e)}
+              onSelect={this.handleSelect}
               style={{ width: "100%" }}
               dataSource={dataSource}
               placeholder="Select Your City"

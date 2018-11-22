@@ -4,32 +4,31 @@ import { connect } from "react-redux";
 import { Row, Col, Card, Button } from "antd";
 import spinner from "../assets/images/spinner.gif";
 
+let restaurants =[];
+
 class Restaurants extends React.Component {
   state = {
-    restaurant: "",
     restaurants: [],
-    loaded: ""
-  };
-
-  componenDidmount() {
-    this.setState({
-      loaded: false
-    });
+    loaded: false
   }
+
+ 
   componentDidUpdate(prevProps) {
     this.props.citySelected.length !== prevProps.citySelected.length &&
       axios
         .get(
-          `http://opentable.herokuapp.com/api/restaurants?city=${
-            this.props.citySelected
-          }`
+          `http://opentable.herokuapp.com/api/restaurants?city=${this.props.citySelected}`
         )
-        .then(res =>
+        .then(res => {
+          restaurants = res.data.restaurants;
           this.setState({
-            restaurants: res.data.restaurants,
+            restaurants,
             loaded: true
-          })
-        );
+          })}
+        )
+        .catch( err => {
+          console.log({err})
+        })
   }
 
   render() {
@@ -62,16 +61,16 @@ class Restaurants extends React.Component {
                         description={restaurant_details}
                       />{" "}
                       <br />{" "}
-                      <Button type="dashed">
+                     
                         <a
                           alt="Reserve Table"
                           href={restaurant.reserve_url}
                           target="_blank"
                           rel="noopener noreferrer"
-                        >
-                          Reserve Table
+                        > <Button type="danger">
+                          Reserve Table</Button>
                         </a>{" "}
-                      </Button>
+                      
                     </Card>
                   </Col>
                 );
