@@ -4,31 +4,71 @@ import { connect } from "react-redux";
 import { Row, Col, Card, Button } from "antd";
 import spinner from "../assets/images/spinner.gif";
 
-let restaurants =[];
+let restaurants = [];
 
 class Restaurants extends React.Component {
   state = {
     restaurants: [],
-    loaded: false
+    loaded: true
+  };
+
+  renderSwitch(price) {
+    switch (price) {
+      case 0:
+        return "";
+      case 1:
+        return "$";
+      case 2:
+        return "$$";
+      case 3:
+        return "$$$";
+      case 4:
+        return "$$$$";
+      case 5:
+        return "$$$$$";
+      default:
+        return "";
+    }
   }
 
- 
+  // Default City = Toronto
+  componentDidMount(prevProps) {
+    axios
+      .get(`http://opentable.herokuapp.com/api/restaurants?city=toronto`)
+      .then(res => {
+        restaurants = res.data.restaurants;
+        this.setState({
+          restaurants,
+          loaded: true
+        });
+      })
+      .catch(err => {
+        console.log({ err });
+      });
+  }
+
   componentDidUpdate(prevProps) {
-    this.props.citySelected.length !== prevProps.citySelected.length &&
-      axios
-        .get(
-          `http://opentable.herokuapp.com/api/restaurants?city=${this.props.citySelected}`
-        )
-        .then(res => {
-          restaurants = res.data.restaurants;
-          this.setState({
-            restaurants,
-            loaded: true
-          })}
-        )
-        .catch( err => {
-          console.log({err})
-        })
+    this.props.citySelected !== prevProps.citySelected &&
+      this.setState({
+        restaurants,
+        loaded: false
+      });
+    axios
+      .get(
+        `http://opentable.herokuapp.com/api/restaurants?city=${
+          this.props.citySelected
+        }`
+      )
+      .then(res => {
+        restaurants = res.data.restaurants;
+        this.setState({
+          restaurants,
+          loaded: true
+        });
+      })
+      .catch(err => {
+        console.log({ err });
+      });
   }
 
   render() {
@@ -39,8 +79,9 @@ class Restaurants extends React.Component {
           <div>
             <Row gutter={48} type="flex" justify="space-around" align="middle">
               {this.state.restaurants.map((restaurant, i) => {
+                let price = this.renderSwitch(restaurant.price);
                 let restaurant_details =
-                  restaurant.address + " " + restaurant.city;
+                  restaurant.address + " " + restaurant.city + " " + price;
                 return (
                   <Col
                     key={i}
@@ -61,16 +102,15 @@ class Restaurants extends React.Component {
                         description={restaurant_details}
                       />{" "}
                       <br />{" "}
-                     
-                        <a
-                          alt="Reserve Table"
-                          href={restaurant.reserve_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        > <Button type="danger">
-                          Reserve Table</Button>
-                        </a>{" "}
-                      
+                      <a
+                        alt="Reserve Table"
+                        href={restaurant.reserve_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {" "}
+                        <Button type="danger">Reserve Table</Button>
+                      </a>{" "}
                     </Card>
                   </Col>
                 );

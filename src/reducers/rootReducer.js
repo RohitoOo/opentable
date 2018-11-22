@@ -1,5 +1,5 @@
 const initState = {
-    citySelected : ""
+    citySelected : "toronto"
 }
 
 const rootReducer = (state = initState, action) => {

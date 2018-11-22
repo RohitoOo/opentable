@@ -17,8 +17,8 @@ class City extends React.Component {
     axios
       .get("http://opentable.herokuapp.com/api/cities")
       .then(res => {
-        // Categorize Cities Based On Country Or Area ( SUGGESTION ) 
-         cities = res.data.cities.splice(0,200)
+        // Categorize Cities Based On Country Or Area ( SUGGESTION )
+        cities = res.data.cities.splice(0, 100);
         this.setState({
           cities,
           loading: false
@@ -31,12 +31,12 @@ class City extends React.Component {
   }
   handleSelect = citySelected => {
     // Update State With Redux
+    // this.props.history.push("/restaurants");
     this.props.handleSelectCity(citySelected);
-    this.props.history && this.props.history.push("/restaurants");
   };
 
   render() {
-     dataSource = this.state.cities;
+    dataSource = this.state.cities;
 
     return (
       <div>
@@ -78,7 +78,7 @@ class City extends React.Component {
 const mapDispatchToProps = dispatch => {
   return {
     handleSelectCity: citySelected => {
-      dispatch({ type: "SHOW_RESTAURANTS", citySelected: citySelected });
+      dispatch({ type: "SHOW_RESTAURANTS", citySelected });
     }
   };
 };
