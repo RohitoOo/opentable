@@ -3,14 +3,15 @@ import axios from "axios";
 import { connect } from "react-redux";
 import { Row, Col, Card, Button } from "antd";
 import spinner from "../assets/images/spinner.gif";
-import PropTypes from "prop-types";
+import propTypes from "prop-types";
 
 let restaurants = [];
 
 class Restaurants extends React.Component {
   state = {
     restaurants: [],
-    loaded: true
+    loaded: false,
+    loading: true
   };
 
   renderSwitch(price) {
@@ -34,18 +35,9 @@ class Restaurants extends React.Component {
 
   // Default City = Toronto
   componentDidMount(prevProps) {
-    this.getRestaurantsDefault()
-
-      .then(res => {
-        restaurants = res.data.restaurants;
-      })
-      .catch(err => {});
+    this.getRestaurantsDefault();
   }
   async getRestaurantsDefault() {
-    this.setState({
-      loaded: false
-    });
-
     try {
       const restaurants = await axios.get(
         `http://opentable.herokuapp.com/api/restaurants?city=toronto`
@@ -64,6 +56,7 @@ class Restaurants extends React.Component {
     this.props.citySelected !== prevProps.citySelected &&
       this.setState({
         restaurants,
+        loading: true,
         loaded: false
       });
     axios
@@ -87,68 +80,70 @@ class Restaurants extends React.Component {
   render() {
     const { Meta } = Card;
 
-    const {loaded} = this.state
+    const { loaded, loading } = this.state;
 
-    if(loaded){
+    if (loaded) {
       return (
         <div>
-        <Row gutter={48} type="flex" justify="space-around" align="middle">
-          {this.state.restaurants.map((restaurant, i) => {
-            let price = this.renderSwitch(restaurant.price);
-            let restaurant_details =
-              restaurant.address + " " + restaurant.city + " " + price;
-            return (
-              <Col
-                key={i}
-                value={100}
-                xs={{ span: 24 }}
-                md={{ span: 12 }}
-                lg={{ span: 8 }}
-                xl={{ span: 6 }}
-              >
-                <Card
-                  hoverable
-                  cover={
-                    <img alt={restaurant.name} src={restaurant.image_url} />
-                  }
+          <Row gutter={48} type="flex" justify="space-around" align="middle">
+            {this.state.restaurants.map((restaurant, i) => {
+              let price = this.renderSwitch(restaurant.price);
+              let restaurant_details =
+                restaurant.address + " " + restaurant.city + " " + price;
+              return (
+                <Col
+                  key={i}
+                  value={100}
+                  xs={{ span: 24 }}
+                  md={{ span: 12 }}
+                  lg={{ span: 8 }}
+                  xl={{ span: 6 }}
                 >
-                  <Meta
-                    title={restaurant.name}
-                    description={restaurant_details}
-                  />{" "}
-                  <br />{" "}
-                  <a
-                    alt="Reserve Table"
-                    href={restaurant.reserve_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                  <Card
+                    hoverable
+                    cover={
+                      <img alt={restaurant.name} src={restaurant.image_url} />
+                    }
                   >
-                    {" "}
-                    <Button type="danger">Reserve Table</Button>
-                  </a>{" "}
-                </Card>
-              </Col>
-            );
-          })}
-        </Row>
-      </div>
-      )
+                    <Meta
+                      title={restaurant.name}
+                      description={restaurant_details}
+                    />{" "}
+                    <br />{" "}
+                    <a
+                      alt="Reserve Table"
+                      href={restaurant.reserve_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {" "}
+                      <Button type="danger">Reserve Table</Button>
+                    </a>{" "}
+                  </Card>
+                </Col>
+              );
+            })}
+          </Row>
+        </div>
+      );
     }
-    if(!loaded){
-     return  (<div
+    if (loading) {
+      return (
+        <div
+          style={{
+            textAlign: "center"
+          }}
+        >
+          <img
             style={{
-              textAlign: "center"
+              width: "50%",
+              height: "50%"
             }}
-          >
-            <img
-              style={{
-                width: "50%",
-                height: "50%"
-              }}
-              alt="spinner"
-              src={spinner}
-            />
-          </div>)
+            alt="spinner"
+            src={spinner}
+          />
+        </div>
+      );
     }
   }
 }
@@ -159,8 +154,8 @@ const mapStateToProps = state => {
   };
 };
 
-Restaurants.PropTypes = {
-  citySelected: PropTypes.object.isRequired
+Restaurants.propTypes = {
+  citySelected: propTypes.string.isRequired
 };
 
 export default connect(mapStateToProps)(Restaurants);

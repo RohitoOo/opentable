@@ -3,7 +3,7 @@ import axios from "axios";
 import { AutoComplete } from "antd";
 import "antd/dist/antd.css";
 import { connect } from "react-redux";
-import PropTypes from "prop-types";
+import propTypes from "prop-types";
 
 let cities = [];
 let dataSource = [];
@@ -77,8 +77,8 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-City.PropTypes = {
-  handleSelectCity: PropTypes.func.isRequired
+City.propTypes = {
+  handleSelectCity: propTypes.func.isRequired
 };
 
 export default connect(
